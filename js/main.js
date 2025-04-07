@@ -1,5 +1,5 @@
 // Load character dialogue data (assuming format: {character, season, episode, words})
-d3.csv('transcripts.csv').then(data => {
+d3.csv('data/sample_transcripts.csv').then(data => {
   const seasonSelect = d3.select('#seasonSelect');
   const chartDiv = d3.select('#chart');
 
