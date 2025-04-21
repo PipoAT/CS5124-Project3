@@ -1,83 +1,134 @@
-// Load character dialogue data (assuming format: {character, season, episode, words})
-d3.csv('data/sample_transcripts.csv').then(data => {
-  const seasonSelect = d3.select('#seasonSelect');
-  const chartDiv = d3.select('#chart');
+const margin = {top: 20, right: 30, bottom: 50, left: 60},
+      width = 800 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
 
-  data.forEach(d => {
-    d.season = +d.season;
-    d.episode = +d.episode;
-    d.words = +d.words;
-  });
+const svg = d3.select("#barChart")
+  .append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  const seasons = Array.from(new Set(data.map(d => d.season))).sort((a, b) => a - b);
-  seasons.forEach(season => {
-    seasonSelect.append('option').attr('value', season).text(`Season ${season}`);
-  });
+const stopWords = new Set(["the", "and", "you", "that", "was", "for", "with", "have", "this", "but", "are", "not", "from", "they", "she", "his", "her", "it's", "we", "your"]);
 
-  seasonSelect.on('change', () => {
-    drawChart(seasonSelect.property('value'));
-  });
+d3.csv("transcripts.csv").then(data => {
+  const seasonSelect = d3.select("#season");
+  const charSelect = d3.select("#character");
+  const seasons = Array.from(new Set(data.map(d => d.Season))).sort((a, b) => +a - +b);
+  const characters = Array.from(new Set(data.map(d => d.Character))).sort();
 
-  function drawChart(selectedSeason) {
-    const filtered = selectedSeason === 'all' ? data : data.filter(d => d.season === +selectedSeason);
+  seasonSelect.selectAll("option")
+    .data(["All"].concat(seasons))
+    .enter().append("option")
+    .text(d => `Season ${d}`);
 
-    // Aggregate by character
-    const grouped = d3.rollups(
-      filtered,
+  charSelect.selectAll("option")
+    .data(characters)
+    .enter().append("option")
+    .text(d => d);
+
+  function updateVisualization(selectedSeason) {
+    const filtered = selectedSeason === "All" ? data : data.filter(d => d.Season === selectedSeason);
+
+    const grouped = d3.rollups(filtered,
       v => ({
-        totalWords: d3.sum(v, d => d.words),
-        episodeCount: new Set(v.map(d => `${d.season}-${d.episode}`)).size
+        totalWords: d3.sum(v, d => d.Words.split(" ").length),
+        episodes: new Set(v.map(d => d.Episode)).size
       }),
-      d => d.character
+      d => d.Character
     );
 
-    const sorted = grouped.sort((a, b) => b[1].totalWords - a[1].totalWords);
+    const top = grouped.sort((a, b) => b[1].totalWords - a[1].totalWords).slice(0, 10);
 
-    chartDiv.selectAll('*').remove();
+    const x = d3.scaleBand()
+      .domain(top.map(d => d[0]))
+      .range([0, width])
+      .padding(0.2);
 
-    const margin = { top: 20, right: 30, bottom: 40, left: 200 };
-    const width = 1000 - margin.left - margin.right;
-    const height = sorted.length * 30;
+    const y = d3.scaleLinear()
+      .domain([0, d3.max(top, d => d[1].totalWords)]).nice()
+      .range([height, 0]);
 
-    const svg = chartDiv.append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
-      .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+    svg.selectAll(".bar").remove();
+    svg.selectAll(".axis").remove();
 
-    const x = d3.scaleLinear()
-      .domain([0, d3.max(sorted, d => d[1].totalWords)])
-      .range([0, width]);
+    svg.append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(x));
 
-    const y = d3.scaleBand()
-      .domain(sorted.map(d => d[0]))
-      .range([0, height])
-      .padding(0.1);
-
-    svg.append('g')
+    svg.append("g")
       .call(d3.axisLeft(y));
 
-    svg.append('g')
-      .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(x).ticks(5));
-
-    svg.selectAll('.bar')
-      .data(sorted)
-      .enter().append('rect')
-      .attr('class', 'bar')
-      .attr('x', 0)
-      .attr('y', d => y(d[0]))
-      .attr('width', d => x(d[1].totalWords))
-      .attr('height', y.bandwidth());
-
-    svg.selectAll('.label')
-      .data(sorted)
-      .enter().append('text')
-      .attr('x', d => x(d[1].totalWords) + 5)
-      .attr('y', d => y(d[0]) + y.bandwidth() / 2 + 4)
-      .text(d => `${d[1].totalWords} words, ${d[1].episodeCount} episodes`)
-      .style('font-size', '12px');
+    svg.selectAll(".bar")
+      .data(top)
+      .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", d => x(d[0]))
+      .attr("y", d => y(d[1].totalWords))
+      .attr("width", x.bandwidth())
+      .attr("height", d => height - y(d[1].totalWords));
   }
 
-  drawChart('all');
+  function drawWordCloud(selectedCharacter, selectedSeason) {
+    const filtered = selectedSeason === "All" ? data : data.filter(d => d.Season === selectedSeason);
+    const charLines = filtered.filter(d => d.Character === selectedCharacter);
+    const wordCounts = {};
+
+    charLines.forEach(d => {
+      const words = d.Words.toLowerCase().replace(/[.,!?']/g, '').split(/\s+/);
+      words.forEach(w => {
+        if (!stopWords.has(w) && w.length > 2) {
+          wordCounts[w] = (wordCounts[w] || 0) + 1;
+        }
+      });
+    });
+
+    const wordsArray = Object.entries(wordCounts).map(([text, size]) => ({text, size})).slice(0, 100);
+
+    d3.select("#wordCloud").selectAll("svg").remove();
+
+    const wcWidth = 800, wcHeight = 400;
+    const layout = d3.layout.cloud()
+      .size([wcWidth, wcHeight])
+      .words(wordsArray)
+      .padding(5)
+      .rotate(() => ~~(Math.random() * 2) * 90)
+      .font("Impact")
+      .fontSize(d => Math.sqrt(d.size) * 8)
+      .on("end", draw);
+
+    layout.start();
+
+    function draw(words) {
+      d3.select("#wordCloud")
+        .append("svg")
+        .attr("width", wcWidth)
+        .attr("height", wcHeight)
+        .append("g")
+        .attr("transform", `translate(${wcWidth / 2},${wcHeight / 2})`)
+        .selectAll("text")
+        .data(words)
+        .enter().append("text")
+        .attr("class", "word")
+        .style("font-size", d => `${d.size}px`)
+        .style("fill", () => d3.schemeCategory10[Math.floor(Math.random() * 10)])
+        .attr("text-anchor", "middle")
+        .attr("transform", d => `translate(${d.x},${d.y}) rotate(${d.rotate})`)
+        .text(d => d.text);
+    }
+  }
+
+  seasonSelect.on("change", function () {
+    const s = this.value.replace("Season ", "");
+    updateVisualization(s);
+    drawWordCloud(charSelect.node().value, s);
+  });
+
+  charSelect.on("change", function () {
+    const s = seasonSelect.node().value.replace("Season ", "");
+    drawWordCloud(this.value, s);
+  });
+
+  updateVisualization("All");
+  drawWordCloud(characters[0], "All");
 });
