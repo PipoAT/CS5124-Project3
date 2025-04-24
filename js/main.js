@@ -1,4 +1,4 @@
-// import { renderCharacterBarChart } from './visualizations/barChart.js';
+import renderCharacterBarChart from './visualizations/barChart.js';
 // import { renderCharacterLineChart } from './visualizations/lineChart.js';
 import renderCharacterWordCloud from './visualizations/wordCloud.js';
 // import { renderShowPieChart } from './visualizations/renderShowPieChart.js';
@@ -6,6 +6,7 @@ import renderCharacterWordCloud from './visualizations/wordCloud.js';
 import fileNamesArray from './data_structures/fileNamesArray.js';
 import charactersArray  from './data_structures/charactersArray.js';
 import seasonsArray from './data_structures/seasonsArray.js';
+// import { update } from 'tar';
 
 function loadData() {
     const seasonDropdown = document.getElementById('season');
@@ -46,13 +47,7 @@ function loadData() {
     Promise.all(fetchPromises).then(() => {
       // This runs once, after all episodes are processed
       console.log('Character Count Map (Season):', Array.from(characterCountMap.entries()));
-      renderCharacterWordCloud('#wordCloud', Array.from(characterCountMap.entries()).map(([text, size]) => ({ text, size })), {
-            width: 500,
-            height: 500,
-            fontSizeRange: [10, 50],
-            fontFamily: "sans-serif",
-            colors: d3.schemeCategory10,
-        });
+      updateVisualizations(characterCountMap); // Pass the map to the visualization function
     });
     // TODO: Use the processed data to update visualizations
 }
@@ -77,8 +72,14 @@ function populateSeasonDropdown() {
     });
 }
 
-function updateVisualizations() {
-    
+function updateVisualizations(characterCountMap) {
+  renderCharacterWordCloud('#wordCloud', Array.from(characterCountMap.entries()).map(([text, size]) => ({ text, size })), {
+    width: 500,
+    height: 500,
+    fontSizeRange: [10, 50],
+    fontFamily: "sans-serif",
+    colors: d3.schemeCategory10,
+});
 }
 
 // Call the functions to populate the dropdowns when the page loads
@@ -88,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadData(); // Load data for the default selected season
     updateVisualizations(); // Initial call to populate visualizations based on the default selected season
 });
-
 document.getElementById('season').addEventListener('change', () => {
     loadData(); // Load data for the newly selected season
     updateVisualizations(); // Update visualizations based on the new selection

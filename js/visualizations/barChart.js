@@ -47,3 +47,5 @@ function renderCharacterBarChart(data) {
         .attr("height", d => height - y(d.value))
         .attr("fill", "steelblue");
 }
+
+export default renderCharacterBarChart;
