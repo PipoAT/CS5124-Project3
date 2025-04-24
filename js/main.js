@@ -3,7 +3,6 @@
 // import { renderCharacterWordCloud } from './visualizations/wordCloud.js';
 // import { renderShowPieChart } from './visualiations/renderShowPieChart';
 // import { renderShowArcDiagram } from './renderShowArcDiagram.js';
-import { fileNamesArray } from './data_structures/fileNamesArray.js';
 import  charactersArray  from './data_structures/charactersArray.js';
 import  seasonsArray from './data_structures/seasonsArray.js';
 
