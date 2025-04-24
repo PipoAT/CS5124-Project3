@@ -46,16 +46,14 @@ function loadData() {
     Promise.all(fetchPromises).then(() => {
       // This runs once, after all episodes are processed
       console.log('Character Count Map (Season):', Array.from(characterCountMap.entries()));
+      renderCharacterWordCloud('#wordCloud', Array.from(characterCountMap.entries()).map(([text, size]) => ({ text, size })), {
+            width: 500,
+            height: 500,
+            fontSizeRange: [10, 50],
+            fontFamily: "sans-serif",
+            colors: d3.schemeCategory10,
+        });
     });
-
-    renderCharacterWordCloud('#wordCloud', Array.from(characterCountMap.entries()).map(([text, size]) => ({ text, size })), {
-        width: 500,
-        height: 500,
-        fontSizeRange: [10, 50],
-        fontFamily: "sans-serif",
-        colors: d3.schemeCategory10,
-    });
-
     // TODO: Use the processed data to update visualizations
 }
 
