@@ -1,0 +1,5 @@
+charactersArray = [
+
+];
+
+export { charactersArray };
