@@ -4,8 +4,8 @@
 // import { renderShowPieChart } from './visualiations/renderShowPieChart';
 // import { renderShowArcDiagram } from './visualiations/renderShowArcDiagram.js';
 import fileNamesArray from './data_structures/fileNamesArray.js';
-import  charactersArray  from './data_structures/charactersArray.js';
-import  seasonsArray from './data_structures/seasonsArray.js';
+import charactersArray  from './data_structures/charactersArray.js';
+import seasonsArray from './data_structures/seasonsArray.js';
 
 function loadData() {
     const seasonDropdown = document.getElementById('season');
@@ -22,32 +22,31 @@ function loadData() {
     // Create a map to count character occurrences
     const characterCountMap = new Map();
 
-    // Read the files and process their content
-    seasonFiles.forEach(fileName => {
-        fetch(fileName)
-            .then(response => response.text())
-            .then(data => {
-                const lines = data.split('\n');
-                lines.forEach(line => {
-                    const [character, ...rest] = line.split(':');
-                    if (character) {
-                        const trimmedCharacter = character.trim();
-                        // Update the count in the map
-                        characterCountMap.set(
-                            trimmedCharacter,
-                            (characterCountMap.get(trimmedCharacter) || 0) + 1
-                        );
-                    }
-                });
-            })
-            .then(() => {
-              console.log('Character Count Map:', Array.from(characterCountMap.entries()));
-            })
-            .catch(error => console.error(`Error reading file ${fileName}:`, error));
-    });
+    // Create an array of fetch promises
+    const fetchPromises = seasonFiles.map(fileName =>
+      fetch(fileName)
+          .then(response => response.text())
+          .then(data => {
+              const lines = data.split('\n');
+              lines.forEach(line => {
+                  const [character, ...rest] = line.split(':');
+                  if (character) {
+                      const trimmedCharacter = character.trim();
+                      characterCountMap.set(
+                          trimmedCharacter,
+                          (characterCountMap.get(trimmedCharacter) || 0) + 1
+                      );
+                  }
+              });
+          })
+          .catch(error => console.error(`Error reading file ${fileName}:`, error))
+    );
 
-    // Log the character count map for debugging
-    console.log('Character Count Map:', Array.from(characterCountMap.entries()));
+    // Wait for all files to be fetched and processed
+    Promise.all(fetchPromises).then(() => {
+      // This runs once, after all episodes are processed
+      console.log('Character Count Map (Season):', Array.from(characterCountMap.entries()));
+    });
 
     // TODO: Use the processed data to update visualizations
 }
