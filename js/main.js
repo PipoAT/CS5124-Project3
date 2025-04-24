@@ -2,7 +2,7 @@ import renderCharacterBarChart from './visualizations/barChart.js';
 // import { renderCharacterLineChart } from './visualizations/lineChart.js';
 import renderCharacterWordCloud from './visualizations/wordCloud.js';
 import renderShowPieChart from './visualizations/pieChart.js';
-// import { renderShowArcDiagram } from './visualiations/renderShowArcDiagram.js';
+import renderShowArcDiagram from './visualizations/arcDiagram.js';
 import fileNamesArray from './data_structures/fileNamesArray.js';
 import charactersArray  from './data_structures/charactersArray.js';
 import seasonsArray from './data_structures/seasonsArray.js';
@@ -77,6 +77,11 @@ function updateVisualizations(characterCountMap) {
       Array.from(characterCountMap.entries()).map(([text, size]) => ({ label: text, value: size })),
       'pieChart'
   );
+
+  renderShowArcDiagram('#arcDiagram', {
+      nodes: Array.from(characterCountMap.entries()).map(([text, size]) => ({ id: text, label: text })),
+      links: Array.from(characterCountMap.entries()).map(([text, size], index) => ({ source: index, target: (index + 1) % characterCountMap.size }))
+});
     
   renderCharacterWordCloud('#wordCloud', Array.from(characterCountMap.entries()).map(([text, size]) => ({ text, size })), {
     width: 500,

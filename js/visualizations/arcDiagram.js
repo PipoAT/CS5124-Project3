@@ -1,8 +1,8 @@
-function renderShowArcDiagram(data) {
+export default function renderShowArcDiagram(container, data) {
     const width = 800;
     const height = 400;
 
-    const svg = d3.select("body")
+    const svg = d3.select(container)
         .append("svg")
         .attr("width", width)
         .attr("height", height);
