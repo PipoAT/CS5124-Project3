@@ -1,4 +1,7 @@
 export default function renderShowPieChart(data, elementId) {
+    // Remove existing SVG if it exists
+    d3.select(`#${elementId}`).select("svg").remove();
+
     // Set dimensions and radius
     const width = 400;
     const height = 400;
@@ -30,9 +33,6 @@ export default function renderShowPieChart(data, elementId) {
         .style("position", "absolute")
         .style("background", "white")
         .style("border", "1px solid #ccc")
-        .style("padding", "5px")
-        .style("border-radius", "5px")
-        .style("pointer-events", "none")
         .style("opacity", 0);
 
     // Bind data and create pie chart
