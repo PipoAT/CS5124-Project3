@@ -2,6 +2,8 @@ export default function renderShowArcDiagram(container, data) {
     const width = 800;
     const height = 400;
 
+    d3.select(container).select("svg").remove(); // Remove existing SVG if it exists
+
     const svg = d3.select(container)
         .append("svg")
         .attr("width", width)
