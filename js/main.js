@@ -73,10 +73,10 @@ function populateSeasonDropdown() {
 }
 
 function updateVisualizations(characterCountMap) {
-    renderShowPieChart(
-        Array.from(characterCountMap.entries()).map(([text, size]) => ({ label: text, value: size })),
-        'pieChart'
-    );
+  renderShowPieChart(
+      Array.from(characterCountMap.entries()).map(([text, size]) => ({ label: text, value: size })),
+      'pieChart'
+  );
     
   renderCharacterWordCloud('#wordCloud', Array.from(characterCountMap.entries()).map(([text, size]) => ({ text, size })), {
     width: 500,
@@ -84,7 +84,12 @@ function updateVisualizations(characterCountMap) {
     fontSizeRange: [10, 50],
     fontFamily: "sans-serif",
     colors: d3.schemeCategory10,
-});
+  });
+
+  renderCharacterBarChart(
+    Array.from(characterCountMap.entries()).map(([label, value]) => ({ label, value })),
+    '#barChart'
+  );
 
 }
 
