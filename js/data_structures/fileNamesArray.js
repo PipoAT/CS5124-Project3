@@ -1,4 +1,4 @@
-const fileNames = [
+const fileNamesArray = [
   "data/1x01_-_The_Pilot.txt",
   "data/1x02_-_Cat's_in_the_Bag.txt",
   "data/1x03_-_and_the_Bag's_in_the_River.txt",
@@ -60,3 +60,5 @@ const fileNames = [
   "data/5x15_-_Granite_State.txt",
   "data/5x16_-_Felina.txt"
 ];
+
+export { fileNamesArray };
