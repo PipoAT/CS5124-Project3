@@ -2,7 +2,7 @@
 // import { renderCharacterLineChart } from './visualizations/lineChart.js';
 // import { renderCharacterWordCloud } from './visualizations/wordCloud.js';
 // import { renderShowPieChart } from './visualiations/renderShowPieChart';
-// import { renderShowArcDiagram } from './renderShowArcDiagram.js';
+// import { renderShowArcDiagram } from './visualiations/renderShowArcDiagram.js';
 import fileNamesArray from './data_structures/fileNamesArray.js';
 import  charactersArray  from './data_structures/charactersArray.js';
 import  seasonsArray from './data_structures/seasonsArray.js';
