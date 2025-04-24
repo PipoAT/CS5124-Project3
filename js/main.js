@@ -40,7 +40,23 @@ function updateVisualizations() {
 
     console.log(`Files for Season ${selectedSeason}:`, seasonFiles);
 
-    // TODO: Use the filtered files to update visualizations
+    // Read the files and process their content
+    seasonFiles.forEach(fileName => {
+        fetch(fileName)
+            .then(response => response.text())
+            .then(data => {
+                const lines = data.split('\n');
+                lines.forEach(line => {
+                    const [character, ...rest] = line.split(':');
+                    if (character) {
+                        console.log(`Character: ${character.trim()}`);
+                    }
+                });
+            })
+            .catch(error => console.error(`Error reading file ${fileName}:`, error));
+    });
+
+    // TODO: Use the processed data to update visualizations
 }
 
 // Call the functions to populate the dropdowns when the page loads
