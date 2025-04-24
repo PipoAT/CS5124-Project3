@@ -9,11 +9,13 @@ function renderCharacterWordCloud(selector, words, options = {}) {
         ...options,
     };
 
+    d3.select(`${selector}`).select("svg").remove();
+
     const svg = d3
         .select(selector)
         .append("svg")
         .attr("width", defaultOptions.width)
-        .attr("height", defaultOptions.height);
+        .attr("height", defaultOptions.height)
 
     const layout = d3.layout.cloud()
         .size([defaultOptions.width, defaultOptions.height])
