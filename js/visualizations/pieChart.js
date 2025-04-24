@@ -1,4 +1,4 @@
-function renderShowPieChart(data, elementId) {
+export default function renderShowPieChart(data, elementId) {
     // Set dimensions and radius
     const width = 400;
     const height = 400;

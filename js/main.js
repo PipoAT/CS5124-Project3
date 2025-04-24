@@ -1,7 +1,7 @@
 import renderCharacterBarChart from './visualizations/barChart.js';
 // import { renderCharacterLineChart } from './visualizations/lineChart.js';
 import renderCharacterWordCloud from './visualizations/wordCloud.js';
-// import { renderShowPieChart } from './visualizations/renderShowPieChart.js';
+import renderShowPieChart from './visualizations/pieChart.js';
 // import { renderShowArcDiagram } from './visualiations/renderShowArcDiagram.js';
 import fileNamesArray from './data_structures/fileNamesArray.js';
 import charactersArray  from './data_structures/charactersArray.js';
@@ -73,6 +73,11 @@ function populateSeasonDropdown() {
 }
 
 function updateVisualizations(characterCountMap) {
+    renderShowPieChart(
+        Array.from(characterCountMap.entries()).map(([text, size]) => ({ label: text, value: size })),
+        'pieChart'
+    );
+    
   renderCharacterWordCloud('#wordCloud', Array.from(characterCountMap.entries()).map(([text, size]) => ({ text, size })), {
     width: 500,
     height: 500,
@@ -80,6 +85,7 @@ function updateVisualizations(characterCountMap) {
     fontFamily: "sans-serif",
     colors: d3.schemeCategory10,
 });
+
 }
 
 // Call the functions to populate the dropdowns when the page loads
