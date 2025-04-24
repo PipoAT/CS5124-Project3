@@ -21,3 +21,5 @@ h1, h2 {
 .dropdown {
   margin: 1em 0;
 }
+
+#barChart svg, #wordCloud svg { margin-top: 20px; }
