@@ -32,6 +32,17 @@ export default function renderShowArcDiagram(container, data) {
         .attr("stroke", "steelblue")
         .attr("stroke-width", 1.5);
 
+    // Add a tooltip div (hidden by default)
+    const tooltip = d3.select(container)
+        .append("div")
+        .style("position", "absolute")
+        .style("background", "white")
+        .style("border", "1px solid #ccc")
+        .style("padding", "5px")
+        .style("border-radius", "5px")
+        .style("pointer-events", "none")
+        .style("opacity", 0);
+
     // Draw nodes
     svg.selectAll("circle")
         .data(nodes)
@@ -40,7 +51,24 @@ export default function renderShowArcDiagram(container, data) {
         .attr("cx", d => xScale(d.id))
         .attr("cy", height / 2)
         .attr("r", 5)
-        .attr("fill", "orange");
+        .attr("fill", "orange")
+        .on("mouseover", function (event, d) {
+            d3.select(this).attr("fill", "red"); // Change color on hover
+            tooltip
+                .style("opacity", 1)
+                .html(`ID: ${d.id}<br>Label: ${d.label}`)
+                .style("left", `${event.pageX + 10}px`)
+                .style("top", `${event.pageY + 10}px`);
+        })
+        .on("mousemove", function (event) {
+            tooltip
+                .style("left", `${event.pageX + 10}px`)
+                .style("top", `${event.pageY + 10}px`);
+        })
+        .on("mouseout", function () {
+            d3.select(this).attr("fill", "orange"); // Revert color on mouse out
+            tooltip.style("opacity", 0);
+        });
 
     // Add labels
     svg.selectAll("text")
