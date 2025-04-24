@@ -13,7 +13,7 @@
 <body class="bg-light">
   <div class="container py-5">
     <header class="text-center mb-5">
-      <h1 class="display-4">Breaking Bad</h1>
+      <h1 class="display-4">Breaking Bad Analysis</h1>
       <h2 class="text-muted">Character Importance & Word Usage in <i>Breaking Bad</i></h2>
     </header>
 
@@ -31,22 +31,43 @@
 
     <div class="row mb-4">
       <div class="col-md-6">
-        <label for="season" class="form-label">Select a season:</label>
+        <label for="season" class="form-label">Select a Season:</label>
         <select id="season" class="form-select"></select>
       </div>
       <div class="col-md-6">
-        <label for="character" class="form-label">Select a character:</label>
+        <label for="character" class="form-label">Select a Character:</label>
         <select id="character" class="form-select"></select>
       </div>
     </div>
 
-    <div id="barChart" class="mb-5"></div>
-    <div id="lineChart" class="mb-5"></div>
-    <div id="arcDiagram" class="mb-5"></div>
+    <section class="mb-5">
+      <h2 class="text-center mb-4">Character Importance Across Seasons</h2>
+      <div id="barChart" class="mb-5"></div>
+    </section>
 
-    <h2 class="text-center mb-4">What Does This Character Say?</h2>
-    <div id="wordCloud" class="mb-5"></div>
-    <div id="pieChart" class="mb-5"></div>
+    <section class="mb-5">
+      <h2 class="text-center mb-4">Character Evolution Over Time</h2>
+      <div id="lineChart" class="mb-5"></div>
+    </section>
+
+    <section class="mb-5">
+      <h2 class="text-center mb-4">Character Relationships</h2>
+      <div id="arcDiagram" class="mb-5"></div>
+    </section>
+
+    <section class="mb-5">
+      <h2 class="text-center mb-4">What Does This Character Say?</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <h3 class="text-center">Word Cloud</h3>
+          <div id="wordCloud" class="mb-5"></div>
+        </div>
+        <div class="col-md-6">
+          <h3 class="text-center">Word Distribution</h3>
+          <div id="pieChart" class="mb-5"></div>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script type="module" src="./js/main.js"></script>
