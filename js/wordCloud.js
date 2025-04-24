@@ -1,63 +1,50 @@
-class renderCharacterWordCloud {
-    constructor(selector, words, options = {}) {
-        this.selector = selector;
-        this.words = words;
-        this.options = {
-            width: options.width || 500,
-            height: options.height || 500,
-            fontSizeRange: options.fontSizeRange || [10, 50],
-            fontFamily: options.fontFamily || "sans-serif",
-            colors: options.colors || d3.schemeCategory10,
-            ...options,
-        };
-        this.init();
+function renderCharacterWordCloud(selector, words, options = {}) {
+    const defaultOptions = {
+        width: 500,
+        height: 500,
+        fontSizeRange: [10, 50],
+        fontFamily: "sans-serif",
+        colors: d3.schemeCategory10,
+        ...options,
     };
 
-    init() {
-        this.svg = d3
-            .select(this.selector)
-            .append("svg")
-            .attr("width", this.options.width)
-            .attr("height", this.options.height);
+    const svg = d3
+        .select(selector)
+        .append("svg")
+        .attr("width", defaultOptions.width)
+        .attr("height", defaultOptions.height);
 
-        this.render();
-    }
+    const layout = cloud()
+        .size([defaultOptions.width, defaultOptions.height])
+        .words(
+            words.map((word) => ({
+                text: word.text,
+                size: word.size,
+            }))
+        )
+        .padding(5)
+        .rotate(() => (Math.random() > 0.5 ? 0 : 90))
+        .font(defaultOptions.fontFamily)
+        .fontSize((d) => d.size)
+        .on("end", draw);
 
-    render() {
-        const layout = cloud()
-            .size([this.options.width, this.options.height])
-            .words(
-                this.words.map((word) => ({
-                    text: word.text,
-                    size: word.size,
-                }))
-            )
-            .padding(5)
-            .rotate(() => (Math.random() > 0.5 ? 0 : 90))
-            .font(this.options.fontFamily)
-            .fontSize((d) => d.size)
-            .on("end", (words) => this.draw(words));
+    layout.start();
 
-        layout.start();
-    }
+    function draw(words) {
+        const color = d3.scaleOrdinal(defaultOptions.colors);
 
-    draw(words) {
-        const color = d3.scaleOrdinal(this.options.colors);
-
-        this.svg
-            .append("g")
+        svg.append("g")
             .attr(
                 "transform",
-                `translate(${this.options.width / 2}, ${this.options.height / 2})`
+                `translate(${defaultOptions.width / 2}, ${defaultOptions.height / 2})`
             )
             .selectAll("text")
             .data(words)
             .enter()
             .append("text")
-            .style("font-family", this.options.fontFamily)
+            .style("font-family", defaultOptions.fontFamily)
             .style("font-size", (d) => `${d.size}px`)
             .style("fill", (d, i) => color(i))
-            .style("fill", (d, i) => color(i)) // 'd' is used in the next line, so no changes needed
             .attr("transform", (d) => `translate(${d.x}, ${d.y}) rotate(${d.rotate})`)
             .text((d) => d.text);
     }
