@@ -32,11 +32,20 @@ function populateSeasonDropdown() {
 }
 
 function updateVisualizations() {
-    // TODO: Update visualizations based on selected character
+    const seasonDropdown = document.getElementById('season');
+    const selectedSeason = seasonDropdown.value;
+
+    // Filter file names based on the selected season
+    const seasonFiles = fileNamesArray.filter(fileName => fileName.startsWith(`data/${selectedSeason}x`));
+
+    console.log(`Files for Season ${selectedSeason}:`, seasonFiles);
+
+    // TODO: Use the filtered files to update visualizations
 }
 
 // Call the functions to populate the dropdowns when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     populateCharacterDropdown();
     populateSeasonDropdown();
+    updateVisualizations(); // Initial call to populate visualizations based on the default selected season
 });
