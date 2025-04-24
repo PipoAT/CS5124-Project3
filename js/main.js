@@ -1,5 +1,5 @@
 import renderCharacterBarChart from './visualizations/barChart.js';
-// import { renderCharacterLineChart } from './visualizations/lineChart.js';
+import renderCharacterLineChart from './visualizations/lineChart.js';
 import renderCharacterWordCloud from './visualizations/wordCloud.js';
 import renderShowPieChart from './visualizations/pieChart.js';
 import renderShowArcDiagram from './visualizations/arcDiagram.js';
@@ -96,6 +96,10 @@ function updateVisualizations(characterCountMap) {
     '#barChart'
   );
 
+  renderCharacterLineChart(
+    Array.from(characterCountMap.entries()).map(([label, value]) => ({ label, value })),
+    '#lineChart'
+  );
 }
 
 // Call the functions to populate the dropdowns when the page loads
