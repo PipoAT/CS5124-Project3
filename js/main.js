@@ -16,6 +16,12 @@ function loadData() {
 
     console.log(`Files for Season ${selectedSeason}:`, seasonFiles);
 
+    // Array to store the processed data
+    const processedData = [];
+
+    // Create a map to count character occurrences
+    const characterCountMap = new Map();
+
     // Read the files and process their content
     seasonFiles.forEach(fileName => {
         fetch(fileName)
@@ -25,12 +31,20 @@ function loadData() {
                 lines.forEach(line => {
                     const [character, ...rest] = line.split(':');
                     if (character) {
-                        console.log(`Character: ${character.trim()}`);
+                        const trimmedCharacter = character.trim();
+                        // Update the count in the map
+                        characterCountMap.set(
+                            trimmedCharacter,
+                            (characterCountMap.get(trimmedCharacter) || 0) + 1
+                        );
                     }
                 });
             })
             .catch(error => console.error(`Error reading file ${fileName}:`, error));
     });
+
+    // Log the character count map for debugging
+    console.log('Character Count Map:', Array.from(characterCountMap.entries()));
 
     // TODO: Use the processed data to update visualizations
 }
