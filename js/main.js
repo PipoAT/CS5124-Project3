@@ -40,6 +40,9 @@ function loadData() {
                     }
                 });
             })
+            .then(() => {
+              console.log('Character Count Map:', Array.from(characterCountMap.entries()));
+            })
             .catch(error => console.error(`Error reading file ${fileName}:`, error));
     });
 
