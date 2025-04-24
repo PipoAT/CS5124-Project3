@@ -1,3 +1,4 @@
+
 function renderCharacterWordCloud(selector, words, options = {}) {
     const defaultOptions = {
         width: 500,
@@ -14,7 +15,7 @@ function renderCharacterWordCloud(selector, words, options = {}) {
         .attr("width", defaultOptions.width)
         .attr("height", defaultOptions.height);
 
-    const layout = cloud()
+    const layout = d3.layout.cloud()
         .size([defaultOptions.width, defaultOptions.height])
         .words(
             words.map((word) => ({
@@ -32,7 +33,6 @@ function renderCharacterWordCloud(selector, words, options = {}) {
 
     function draw(words) {
         const color = d3.scaleOrdinal(defaultOptions.colors);
-
         svg.append("g")
             .attr(
                 "transform",
@@ -44,8 +44,10 @@ function renderCharacterWordCloud(selector, words, options = {}) {
             .append("text")
             .style("font-family", defaultOptions.fontFamily)
             .style("font-size", (d) => `${d.size}px`)
-            .style("fill", (d, i) => color(i))
+            .style("fill", (d) => color(d.text))
             .attr("transform", (d) => `translate(${d.x}, ${d.y}) rotate(${d.rotate})`)
             .text((d) => d.text);
     }
 }
+
+export default renderCharacterWordCloud;
