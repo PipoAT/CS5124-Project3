@@ -56,9 +56,10 @@ function updateVisualizations(characterCountMap) {
     });
     renderCharacterWordCloud(
         '#wordCloud',
-        processedData.flatMap(({ line }) => line.split(/\s+/).map(word => word.toLowerCase().replace(/[^a-z0-9]/g, ''))
-            .filter(word => !['the', 'and', 'a', 'to', 'of', 'in', 'that', 'it', 'is', 'was', 'he', 'for', 'on', 'are', 'as', 'with', 'his', 'they', 'i', 'at', 'be', 'this', 'have', 'from', 'or', 'by', 'one', 'had', 'not', 'but', 'what', 'all', 'were', 'we', 'when', 'your', 'can', 'said', 'there', 'use', 'an', 'each', 'which', 'she', 'do', 'how', 'their', 'if', 'will', 'up', 'about', 'out', 'them', 'then', 'so', 'her', 'would', 'him', 'into', 'has', 'more', 'two', 'like', 'see', 'no', 'could', 'my', 'than', 'been', 'who', 'its', 'now', 'did', 'get', 'come', 'made', 'may', 'part'].includes(word))
-            .map(word => ({ text: word, size: word.length }))),
+        Array.from(new Set(processedData.flatMap(({ line }) => 
+            line.split(/\s+/).map(word => word.toLowerCase())
+                .filter(word => !['the', 'and', 'a', 'to', 'of', 'in', 'that', 'it', 'is', 'was', 'he', 'for', 'on', 'are', 'as', 'with', 'his', 'they', 'i', 'at', 'be', 'this', 'have', 'from', 'or', 'by', 'one', 'had', 'not', 'but', 'what', 'all', 'were', 'we', 'when', 'your', 'can', 'said', 'there', 'use', 'an', 'each', 'which', 'she', 'do', 'how', 'their', 'if', 'will', 'up', 'about', 'out', 'them', 'then', 'so', 'her', 'would', 'him', 'into', 'has', 'more', 'two', 'like', 'see', 'no', 'could', 'my', 'than', 'been', 'who', 'its', 'now', 'did', 'get', 'come', 'made', 'may', 'part'].includes(word))
+        ))).map(word => ({ text: word, size: word.length })),
         { width: 500, height: 500, fontSizeRange: [10, 50], fontFamily: "sans-serif", colors: d3.schemeCategory10 }
     );
     renderCharacterBarChart(characterData, '#barChart');
