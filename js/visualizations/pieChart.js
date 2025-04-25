@@ -75,5 +75,5 @@ export default function renderShowPieChart(data, elementId) {
         .attr("text-anchor", "middle")
         .attr("pointer-events", "none") // Make text non-selectable
         .style("z-index", 1) // Adjust the z-index
-        .text(d => d.data.label);
+        .text(d => d.data.value >= 100 ? d.data.label : ""); // Show label only if value is greater than or equal to 100
 }
