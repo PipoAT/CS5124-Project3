@@ -4,135 +4,71 @@ import renderCharacterWordCloud from './visualizations/wordCloud.js';
 import renderShowPieChart from './visualizations/pieChart.js';
 import renderShowArcDiagram from './visualizations/arcDiagram.js';
 import fileNamesArray from './data_structures/fileNamesArray.js';
-import charactersSet  from './data_structures/charactersSet.js';
+import charactersSet from './data_structures/charactersSet.js';
 import seasonsArray from './data_structures/seasonsArray.js';
-// import { update } from 'tar';
-const processedData = [];
-function loadData() {
-    const seasonDropdown = document.getElementById('season');
-    const selectedSeason = seasonDropdown.value;
 
-    // Filter file names based on the selected season
+const processedData = [];
+const characterCountMap = new Map();
+
+function loadData() {
+    const selectedSeason = document.getElementById('season').value;
     const seasonFiles = fileNamesArray.filter(fileName => fileName.startsWith(`data/${selectedSeason}x`));
 
-    console.log(`Files for Season ${selectedSeason}:`, seasonFiles);
-
-    // Array to store the processed data
-    
-
-    // Create a map to count character occurrences
-    const characterCountMap = new Map();
-
-    // Create an array of fetch promises
-    const fetchPromises = seasonFiles.map(fileName =>
-      fetch(fileName)
-          .then(response => response.text())
-          .then(data => {
-              const lines = data.split('\n');
-              lines.forEach(line => {
-                  const [character, ...rest] = line.split(':');
-                  if (character) {
-                      const trimmedCharacter = character.trim();
-                      characterCountMap.set(
-                          trimmedCharacter,
-                          (characterCountMap.get(trimmedCharacter) || 0) + 1
-                      );
-                        processedData.push({ character: trimmedCharacter, line: rest.join(':') });
-                        console.log(`Character: ${trimmedCharacter}, Line: ${rest.join(':')}`);
-                  }
-                  
-              });
-          })
-          .catch(error => console.error(`Error reading file ${fileName}:`, error))
-    );
-
-    // Wait for all files to be fetched and processed
-    Promise.all(fetchPromises).then(() => {
-      // This runs once, after all episodes are processed
-      const filteredCharacterCountMap = new Map(
-        Array.from(characterCountMap.entries()).filter(([character, count]) => charactersSet.has(character))
-    );
-      console.log('Character Count Map (Season):', Array.from(filteredCharacterCountMap.entries()));
-      updateVisualizations(filteredCharacterCountMap); // Pass the map to the visualization function
+    Promise.all(seasonFiles.map(fileName =>
+        fetch(fileName)
+            .then(response => response.text())
+            .then(data => processFileData(data))
+            .catch(error => console.error(`Error reading file ${fileName}:`, error))
+    )).then(() => {
+        const filteredCharacterCountMap = new Map(
+            Array.from(characterCountMap.entries()).filter(([character]) => charactersSet.has(character))
+        );
+        updateVisualizations(filteredCharacterCountMap);
     });
-    // TODO: Use the processed data to update visualizations
 }
 
-function populateCharacterDropdown() {
-  const dropdown = document.getElementById('character'); // Ensure your HTML has a dropdown with this ID
-
-  // Clear existing options if needed
-  dropdown.innerHTML = '';
-
-  charactersSet.forEach(character => {
-      const option = document.createElement('option');
-      option.value = character;
-      option.textContent = character;
-      dropdown.appendChild(option);
-  });
+function processFileData(data) {
+    data.split('\n').forEach(line => {
+        const [character, ...rest] = line.split(':');
+        if (character) {
+            const trimmedCharacter = character.trim();
+            characterCountMap.set(
+                trimmedCharacter,
+                (characterCountMap.get(trimmedCharacter) || 0) + 1
+            );
+            processedData.push({ character: trimmedCharacter, line: rest.join(':') });
+        }
+    });
 }
 
-function populateSeasonDropdown() {
-    const dropdown = document.getElementById('season'); // Ensure your HTML has a dropdown with this ID
-    seasonsArray.forEach(season => {
-        const option = document.createElement('option');
-        option.value = season;
-        option.textContent = season;
-        dropdown.appendChild(option);
-    });
+function populateDropdown(dropdownId, items) {
+    const dropdown = document.getElementById(dropdownId);
+    dropdown.innerHTML = items.map(item => `<option value="${item}">${item}</option>`).join('');
 }
 
 function updateVisualizations(characterCountMap) {
-  renderShowPieChart(
-      Array.from(characterCountMap.entries()).map(([text, size]) => ({ label: text, value: size })),
-      'pieChart'
-  );
+    const characterData = Array.from(characterCountMap.entries()).map(([label, value]) => ({ label, value }));
 
-  renderShowArcDiagram('#arcDiagram', {
-      nodes: Array.from(characterCountMap.entries()).map(([text, size]) => ({ id: text, label: text })),
-      links: Array.from(characterCountMap.entries()).map(([text, size], index) => ({ source: index, target: (index + 1) % characterCountMap.size }))
-});
-    
-renderCharacterWordCloud(
-    '#wordCloud',
-    processedData
-        .map(({ character, line }) => {
-            const words = line.split(/\s+/).map(word => word.toLowerCase().replace(/[^a-z0-9]/g, ''));
-            const filteredWords = words.filter(word => !['the', 'and', 'a', 'to', 'of', 'in', 'that', 'it', 'is', 'was', 'he', 'for', 'on', 'are', 'as', 'with', 'his', 'they', 'i', 'at', 'be', 'this', 'have', 'from', 'or', 'by', 'one', 'had', 'not', 'but', 'what', 'all', 'were', 'we', 'when', 'your', 'can', 'said', 'there', 'use', 'an', 'each', 'which', 'she', 'do', 'how', 'their', 'if', 'will', 'up', 'about', 'out', 'them', 'then', 'so', 'her', 'would', 'him', 'into', 'has', 'more', 'two', 'like', 'see', 'no', 'could', 'my', 'than', 'been', 'who', 'its', 'now', 'did', 'get', 'come', 'made', 'may', 'part'].includes(word));
-            return filteredWords.map(word => ({ text: word, size: word.length }));
-        })
-        .flat(),
-    {
-        width: 500,
-        height: 500,
-        fontSizeRange: [10, 50],
-        fontFamily: "sans-serif",
-        colors: d3.schemeCategory10,
-    }
-);
-
-  renderCharacterBarChart(
-    Array.from(characterCountMap.entries()).map(([label, value]) => ({ label, value })),
-    '#barChart'
-  );
-
-  renderCharacterLineChart(
-    Array.from(characterCountMap.entries()).map(([label, value]) => ({ label, value })),
-    '#lineChart'
-  );
+    renderShowPieChart(characterData.map(({ label, value }) => ({ label, value })), 'pieChart');
+    renderShowArcDiagram('#arcDiagram', {
+        nodes: characterData.map(({ label }) => ({ id: label, label })),
+        links: characterData.map((_, index) => ({ source: index, target: (index + 1) % characterData.length }))
+    });
+    renderCharacterWordCloud(
+        '#wordCloud',
+        processedData.flatMap(({ line }) => line.split(/\s+/).map(word => word.toLowerCase().replace(/[^a-z0-9]/g, ''))
+            .filter(word => !['the', 'and', 'a', 'to', 'of', 'in', 'that', 'it', 'is', 'was', 'he', 'for', 'on', 'are', 'as', 'with', 'his', 'they', 'i', 'at', 'be', 'this', 'have', 'from', 'or', 'by', 'one', 'had', 'not', 'but', 'what', 'all', 'were', 'we', 'when', 'your', 'can', 'said', 'there', 'use', 'an', 'each', 'which', 'she', 'do', 'how', 'their', 'if', 'will', 'up', 'about', 'out', 'them', 'then', 'so', 'her', 'would', 'him', 'into', 'has', 'more', 'two', 'like', 'see', 'no', 'could', 'my', 'than', 'been', 'who', 'its', 'now', 'did', 'get', 'come', 'made', 'may', 'part'].includes(word))
+            .map(word => ({ text: word, size: word.length }))),
+        { width: 500, height: 500, fontSizeRange: [10, 50], fontFamily: "sans-serif", colors: d3.schemeCategory10 }
+    );
+    renderCharacterBarChart(characterData, '#barChart');
+    renderCharacterLineChart(characterData, '#lineChart');
 }
 
-// Call the functions to populate the dropdowns when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    populateCharacterDropdown();
-    populateSeasonDropdown();
-    loadData(); // Load data for the default selected season
-    updateVisualizations(); // Initial call to populate visualizations based on the default selected season
+    populateDropdown('character', Array.from(charactersSet));
+    populateDropdown('season', seasonsArray);
+    loadData();
 });
-document.getElementById('season').addEventListener('change', () => {
-    loadData(); // Load data for the newly selected season
-    updateVisualizations(); // Update visualizations based on the new selection
-});
-document.getElementById('character').addEventListener('change', () => {
-    updateVisualizations(); // Update visualizations based on the newly selected character
-});
+
+document.getElementById('season').addEventListener('change', loadData);
