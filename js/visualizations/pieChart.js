@@ -10,8 +10,10 @@ export default function renderShowPieChart(data, elementId) {
     // Create an SVG container
     const svg = d3.select(`#${elementId}`)
         .append("svg")
-        .attr("width", width)
-        .attr("height", height)
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
         .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
@@ -71,5 +73,7 @@ export default function renderShowPieChart(data, elementId) {
     arcs.append("text")
         .attr("transform", d => `translate(${arc.centroid(d)})`)
         .attr("text-anchor", "middle")
+        .attr("pointer-events", "none") // Make text non-selectable
+        .style("z-index", 1) // Adjust the z-index
         .text(d => d.data.label);
 }

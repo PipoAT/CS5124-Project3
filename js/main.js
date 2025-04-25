@@ -7,7 +7,7 @@ import fileNamesArray from './data_structures/fileNamesArray.js';
 import charactersSet  from './data_structures/charactersSet.js';
 import seasonsArray from './data_structures/seasonsArray.js';
 // import { update } from 'tar';
-
+const processedData = [];
 function loadData() {
     const seasonDropdown = document.getElementById('season');
     const selectedSeason = seasonDropdown.value;
@@ -18,7 +18,7 @@ function loadData() {
     console.log(`Files for Season ${selectedSeason}:`, seasonFiles);
 
     // Array to store the processed data
-    const processedData = [];
+    
 
     // Create a map to count character occurrences
     const characterCountMap = new Map();
@@ -37,7 +37,10 @@ function loadData() {
                           trimmedCharacter,
                           (characterCountMap.get(trimmedCharacter) || 0) + 1
                       );
+                        processedData.push({ character: trimmedCharacter, line: rest.join(':') });
+                        console.log(`Character: ${trimmedCharacter}, Line: ${rest.join(':')}`);
                   }
+                  
               });
           })
           .catch(error => console.error(`Error reading file ${fileName}:`, error))
@@ -90,13 +93,23 @@ function updateVisualizations(characterCountMap) {
       links: Array.from(characterCountMap.entries()).map(([text, size], index) => ({ source: index, target: (index + 1) % characterCountMap.size }))
 });
     
-  renderCharacterWordCloud('#wordCloud', Array.from(characterCountMap.entries()).map(([text, size]) => ({ text, size })), {
-    width: 500,
-    height: 500,
-    fontSizeRange: [10, 50],
-    fontFamily: "sans-serif",
-    colors: d3.schemeCategory10,
-  });
+renderCharacterWordCloud(
+    '#wordCloud',
+    processedData
+        .map(({ character, line }) => {
+            const words = line.split(/\s+/).map(word => word.toLowerCase().replace(/[^a-z0-9]/g, ''));
+            const filteredWords = words.filter(word => !['the', 'and', 'a', 'to', 'of', 'in', 'that', 'it', 'is', 'was', 'he', 'for', 'on', 'are', 'as', 'with', 'his', 'they', 'i', 'at', 'be', 'this', 'have', 'from', 'or', 'by', 'one', 'had', 'not', 'but', 'what', 'all', 'were', 'we', 'when', 'your', 'can', 'said', 'there', 'use', 'an', 'each', 'which', 'she', 'do', 'how', 'their', 'if', 'will', 'up', 'about', 'out', 'them', 'then', 'so', 'her', 'would', 'him', 'into', 'has', 'more', 'two', 'like', 'see', 'no', 'could', 'my', 'than', 'been', 'who', 'its', 'now', 'did', 'get', 'come', 'made', 'may', 'part'].includes(word));
+            return filteredWords.map(word => ({ text: word, size: word.length }));
+        })
+        .flat(),
+    {
+        width: 500,
+        height: 500,
+        fontSizeRange: [10, 50],
+        fontFamily: "sans-serif",
+        colors: d3.schemeCategory10,
+    }
+);
 
   renderCharacterBarChart(
     Array.from(characterCountMap.entries()).map(([label, value]) => ({ label, value })),
