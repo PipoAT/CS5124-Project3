@@ -4,7 +4,7 @@ import renderCharacterWordCloud from './visualizations/wordCloud.js';
 import renderShowPieChart from './visualizations/pieChart.js';
 import renderShowArcDiagram from './visualizations/arcDiagram.js';
 import fileNamesArray from './data_structures/fileNamesArray.js';
-import charactersArray  from './data_structures/charactersArray.js';
+import charactersSet  from './data_structures/charactersSet.js';
 import seasonsArray from './data_structures/seasonsArray.js';
 // import { update } from 'tar';
 
@@ -46,20 +46,27 @@ function loadData() {
     // Wait for all files to be fetched and processed
     Promise.all(fetchPromises).then(() => {
       // This runs once, after all episodes are processed
-      console.log('Character Count Map (Season):', Array.from(characterCountMap.entries()));
-      updateVisualizations(characterCountMap); // Pass the map to the visualization function
+      const filteredCharacterCountMap = new Map(
+        Array.from(characterCountMap.entries()).filter(([character, count]) => charactersSet.has(character))
+    );
+      console.log('Character Count Map (Season):', Array.from(filteredCharacterCountMap.entries()));
+      updateVisualizations(filteredCharacterCountMap); // Pass the map to the visualization function
     });
     // TODO: Use the processed data to update visualizations
 }
 
 function populateCharacterDropdown() {
-    const dropdown = document.getElementById('character'); // Ensure your HTML has a dropdown with this ID
-    charactersArray.forEach(character => {
-        const option = document.createElement('option');
-        option.value = character;
-        option.textContent = character;
-        dropdown.appendChild(option);
-    });
+  const dropdown = document.getElementById('character'); // Ensure your HTML has a dropdown with this ID
+
+  // Clear existing options if needed
+  dropdown.innerHTML = '';
+
+  charactersSet.forEach(character => {
+      const option = document.createElement('option');
+      option.value = character;
+      option.textContent = character;
+      dropdown.appendChild(option);
+  });
 }
 
 function populateSeasonDropdown() {

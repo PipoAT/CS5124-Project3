@@ -1,6 +1,6 @@
-// data_structures/charactersArray.js
+// data_structures/charactersSet.js
 
-const charactersArray = [
+const charactersSet = new Set ([
   "Walter", // Walter White
   "Jesse", // Jesse Pinkman
   "Skyler", // Skyler White
@@ -10,7 +10,7 @@ const charactersArray = [
   "Mike", // Mike Ehrmantraut
   "Marie", // Marie Schrader
   "Todd", // Todd Alquist
-  "Walt Jr.", // Walter White, Jr.
+  "Walter Jr", // Walter White, Jr
   "Skinny Pete",
   "Badger", // Brandon Mayhew
   "Jane", // Jane Margolis
@@ -22,7 +22,8 @@ const charactersArray = [
   "Carmen", // Carmen Molina
   "Andrea", // Andrea Cantillo
   "Francesca", // Francesca Liddy
-  "Tio", // Hector Salamanca
-];
+  "Tuco", // Tuco Salamanca
+  "Hector", // Hector Salamanca
+]);
 
-export default charactersArray;
+export default charactersSet;
