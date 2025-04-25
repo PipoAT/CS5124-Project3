@@ -68,6 +68,7 @@ function renderCharacterLineChart(data, elementId) {
         .attr("r", 4)
         .attr("fill", "orange")
         .on("mouseover", function(event, d) {
+            this.setAttribute("fill", "green");
             tooltip.transition().duration(200).style("opacity", 1);
             tooltip.html(`<strong>${d.label}</strong><br/>Lines: ${d.value}`);
         })
@@ -77,6 +78,7 @@ function renderCharacterLineChart(data, elementId) {
                 .style("top", (event.pageY - 28) + "px");
         })
         .on("mouseout", function() {
+            this.setAttribute("fill", "orange");
             tooltip.transition().duration(200).style("opacity", 0);
         });
 }
