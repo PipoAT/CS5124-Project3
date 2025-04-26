@@ -1,5 +1,5 @@
 function renderCharacterLineChart(data, elementId) {
-    const margin = { top: 20, right: 30, bottom: 50, left: 50 };
+    const margin = { top: 20, right: 30, bottom: 50, left: 80 };
     const width = 800 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
 
@@ -81,6 +81,16 @@ function renderCharacterLineChart(data, elementId) {
             this.setAttribute("fill", "orange");
             tooltip.transition().duration(200).style("opacity", 0);
         });
+
+    // Y-axis label
+    svg.append("text")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -margin.left + 40)
+    .text("Number of Lines in Season")
+    .style("font-size", "14px")
+    .style("fill", "black");
 }
 
 export default renderCharacterLineChart;

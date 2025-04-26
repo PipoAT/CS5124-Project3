@@ -75,6 +75,16 @@ function renderCharacterBarChart(data, elementId) {
             d3.select(this).attr("fill", "steelblue");
             tooltip.transition().duration(200).style("opacity", 0);
         });
+
+    // Y-axis label
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", `rotate(-90)`)
+        .attr("x", -height / 2)
+        .attr("y", -margin.left + 15)
+        .text("Number of Lines in Season")
+        .style("font-size", "14px")
+        .style("fill", "black");
 }
 
 export default renderCharacterBarChart;
