@@ -55,7 +55,7 @@ export default function renderShowPieChart(data, elementId) {
             d3.select(this)
                 .attr("fill", d3.rgb(color(d.data.label)).darker(1)); // Darken the color on hover
             tooltip.style("opacity", 1)
-                .html(`Label: ${d.data.label}<br>Value: ${d.data.value}`)
+                .html(`Character: ${d.data.label}<br>Lines: ${d.data.value}`)
                 .style("left", `${event.pageX + 10}px`)
                 .style("top", `${event.pageY + 10}px`);
         })
