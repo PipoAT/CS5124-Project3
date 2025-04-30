@@ -50,10 +50,7 @@ function updateVisualizations(characterCountMap) {
     const characterData = Array.from(characterCountMap.entries()).map(([label, value]) => ({ label, value }));
 
     renderShowPieChart(characterData.map(({ label, value }) => ({ label, value })), 'pieChart');
-    renderShowArcDiagram('#arcDiagram', {
-        nodes: characterData.map(({ label }) => ({ id: label, label })),
-        links: characterData.map((_, index) => ({ source: index, target: (index + 1) % characterData.length }))
-    });
+    renderShowArcDiagram("#arcDiagram");
     renderCharacterWordCloud(
         '#wordCloud',
         Array.from(new Set(processedData.flatMap(({ line }) => 
